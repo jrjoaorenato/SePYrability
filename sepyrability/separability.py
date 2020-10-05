@@ -24,14 +24,14 @@ class Separability:
         #inicialmente encontramos um ponto de referência para cada classe e salvamos
         #em refData
         unique = np.unique(labels)
-        refData = np.empty((unique.shape[0], data.shape[1]))
+        refData = np.empty((0, data.shape[1]))
         for i in unique:
             ref_ind = np.argmax(labels == i)
-            refData = np.append(refData, data[ref_ind, :], axis = 0)
+            refData = np.vstack((refData, data[ref_ind, :]))
 
         #para cada referência, calculo a separabilidade por classe e armazeno
         #em sep. Cada linha de sep é uma classe~
-        sep = np.empty(0, dx.shape[0])
+        sep = np.empty((0, dx.shape[0]))
         for i in range(0, unique.shape[0]):
             ref = refData[i]
             #todo: change to distance function
@@ -42,13 +42,13 @@ class Separability:
 
             aux = np.array([[]])
             for j in dx:
-                nrc = (np.where(dist <= j)).shape[0]
+                nrc = (np.where(dist <= j)[0]).shape[0]
                 sd = 1 - (nrc/data.shape[0])
                 aux = np.append(aux, sd)
             sep = np.vstack((sep, aux))
 
         multiscale_separability = {
-            'multiscale_separability': np.mean(sep),
+            'multiscale_separability': np.mean(sep, axis = 0),
             'distance': dx
         }
         return multiscale_separability
@@ -60,6 +60,9 @@ class Separability:
         ms = sep['multiscale_separability']
         if (show_graph):
             plt.plot(distance, ms)
+            plt.xlabel('Distance')
+            plt.ylabel('Multiscale Separability')
+            plt.show()
         auc = 0
         for i in ms:
             auc += i*dx
