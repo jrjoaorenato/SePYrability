@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 class Separability:
     @staticmethod
-    def separability(data, labels, dist, dx = 0.02, start= 0.01):
+    def separability(data, labels, distfun, dx = 0.02, start= 0.01):
         '''
         Separability function will calculate the separability metric 
         of the given data and labels.
@@ -54,12 +54,12 @@ class Separability:
         return multiscale_separability
 
     @staticmethod
-    def calculate_separability(data, labels, dist, dx = 0.02, start= 0.01, show_graph = True):
-        sep = Separability.separability(data, labels, dist, dx, start)
-        dist = sep['distance']
+    def calculate_separability(data, labels, distfun, dx = 0.02, start= 0.01, show_graph = True):
+        sep = Separability.separability(data, labels, distfun, dx, start)
+        distance = sep['distance']
         ms = sep['multiscale_separability']
         if (show_graph):
-            plt.plot(dist, ms)
+            plt.plot(distance, ms)
         auc = 0
         for i in ms:
             auc += i*dx
