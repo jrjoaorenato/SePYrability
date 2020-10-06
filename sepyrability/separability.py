@@ -1,10 +1,11 @@
 import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
+import sepyrability.distance as dis
 
 class Separability:
     @staticmethod
-    def separability(data, labels, distfun, dx = 0.01, start= 0.01):
+    def separability(data, labels, distfun = dis.Distance.euclidian, dx = 0.01, start= 0.01):
         '''
         Separability function will calculate the separability metric 
         of the given data and labels.
@@ -36,9 +37,12 @@ class Separability:
             ref = refData[i]
             #todo: change to distance function
             #calculo a distancia entre ref e todos os pontos
-            dist = data - ref
-            dist = np.sqrt(np.sum(np.power(dist, 2), axis = 1))
-            dist = dist/np.max(dist)
+
+            dist = distfun(ref, data)
+
+            # dist = data - ref
+            # dist = np.sqrt(np.sum(np.power(dist, 2), axis = 1))
+            # dist = dist/np.max(dist)
 
             aux = np.array([[]])
             for j in dx:
@@ -54,7 +58,7 @@ class Separability:
         return multiscale_separability
 
     @staticmethod
-    def calculate_separability(data, labels, distfun, dx = 0.02, start= 0.01, show_graph = True):
+    def calculate_separability(data, labels, distfun = dis.Distance.euclidian, dx = 0.02, start= 0.01, show_graph = True):
         sep = Separability.separability(data, labels, distfun, dx, start)
         distance = sep['distance']
         ms = sep['multiscale_separability']
