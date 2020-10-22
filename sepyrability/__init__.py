@@ -1,2 +1,2 @@
-from sepyrability.separability import Separability
-from sepyrability.distance import Distance
+import sepyrability.separability as separability
+import sepyrability.distance as distance

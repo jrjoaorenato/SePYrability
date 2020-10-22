@@ -3,75 +3,78 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sepyrability.distance as dis
 
-class Separability:
-    @staticmethod
-    def separability(data, labels, distfun = dis.Distance.euclidian, dx = 0.01, start= 0.01):
-        '''
-        Separability function will calculate the separability metric 
-        of the given data and labels.
+def separability(data, labels, distfun = dis.euclidian, dx = 0.01, start= 0.01):
+    '''
+    Separability function will calculate the separability metric 
+    of the given data and labels.
 
-        Returns a dictionary containing the distance intervals as well
-        as the multiscale separability of each interval.
+    Returns a dictionary containing the distance intervals as well
+    as the multiscale separability of each interval.
 
-        Parameters:
-            data (np.array): The data on which separability is to be
-            calculated
-            labels (np.array): label information for each piece of data
-            dx (float): step of each interval
-            dist (function): distance function on which separability is 
-            going to be evaluated
-        '''
-        dx = np.arange(start, 1.0, dx)
-        #inicialmente encontramos um ponto de referência para cada classe e salvamos
-        #em refData
-        unique = np.unique(labels)
-        refData = np.empty((0, data.shape[1]))
-        for i in unique:
-            ref_ind = np.argmax(labels == i)
-            refData = np.vstack((refData, data[ref_ind, :]))
+    Parameters:
+        data (np.array): The data on which separability is to be
+        calculated
+        labels (np.array): label information for each piece of data
+        dx (float): step of each interval
+        dist (function): distance function on which separability is 
+        going to be evaluated
+    '''
+    dx = np.arange(start, 1.0, dx)
+    #we start by storing a reference point for each class in refData
+    unique = np.unique(labels)
+    refData = np.empty((0, data.shape[1]))
+    for i in unique:
+        ref_ind = np.argmax(labels == i)
+        refData = np.vstack((refData, data[ref_ind, :]))
 
-        #para cada referência, calculo a separabilidade por classe e armazeno
-        #em sep. Cada linha de sep é uma classe~
-        sep = np.empty((0, dx.shape[0]))
-        for i in range(0, unique.shape[0]):
-            ref = refData[i]
-            #todo: change to distance function
-            #calculo a distancia entre ref e todos os pontos
+    #for each referece, the separability for class is calculated and stored in sep
+    #each line of sep is a different class
+    sep = np.empty((0, dx.shape[0]))
+    for i in range(0, unique.shape[0]):
+        ref = refData[i]
+        
+        #the corresponding distance between ref and every point
+        #is then calculated using the parameter distfun
+        dist = distfun(ref, data)
 
-            dist = distfun(ref, data)
+        #aux then stores the proportion of the data within that respective distance
+        aux = np.array([[]])
+        for j in dx:
+            nrc = (np.where(dist <= j)[0]).shape[0]
+            #separability is then calculated
+            sd = 1 - (nrc/data.shape[0])
+            aux = np.append(aux, sd)
+        #all the separability data for that specific class is stored in sep
+        sep = np.vstack((sep, aux))
 
-            # dist = data - ref
-            # dist = np.sqrt(np.sum(np.power(dist, 2), axis = 1))
-            # dist = dist/np.max(dist)
+    #after that multiscale separability is calculated for each distance
+    #being the mean of each separability metric
+    #and returns a dictionary containing the multiscale separability and each
+    #respective radius
+    multiscale_separability = {
+        'multiscale_separability': np.mean(sep, axis = 0),
+        'distance': dx
+    }
+    return multiscale_separability
 
-            aux = np.array([[]])
-            for j in dx:
-                nrc = (np.where(dist <= j)[0]).shape[0]
-                sd = 1 - (nrc/data.shape[0])
-                aux = np.append(aux, sd)
-            sep = np.vstack((sep, aux))
-
-        multiscale_separability = {
-            'multiscale_separability': np.mean(sep, axis = 0),
-            'distance': dx
-        }
-        return multiscale_separability
-
-    @staticmethod
-    def calculate_separability(data, labels, distfun = dis.Distance.euclidian, dx = 0.02, start= 0.01, show_graph = True):
-        sep = Separability.separability(data, labels, distfun, dx, start)
-        distance = sep['distance']
-        ms = sep['multiscale_separability']
-        auc = 0
-        for i in ms:
-            auc += i*dx
-        if (show_graph):
-            plt.plot(distance, ms)
-            plt.xlabel('Search Radius')
-            plt.ylabel('Multiscale Separability')
-            plt.xlim(0.0, 1.01)
-            plt.ylim(0.0, 1.01)
-            plt.show()
-        return sep, auc
+def calculate_separability(data, labels, distfun = dis.euclidian, dx = 0.02, start= 0.01, show_graph = True):
+    #calculates separability
+    sep = separability(data, labels, distfun, dx, start)
+    distance = sep['distance']
+    ms = sep['multiscale_separability']
+    auc = 0
+    #calculates auc
+    for i in ms:
+        auc += i*dx
+    #if True, show the separability graph and return, otherwise just return separability for each distance
+    #and auc
+    if (show_graph):
+        plt.plot(distance, ms)
+        plt.xlabel('Search Radius')
+        plt.ylabel('Multiscale Separability')
+        plt.xlim(0.0, 1.01)
+        plt.ylim(0.0, 1.01)
+        plt.show()
+    return sep, auc
 
 
