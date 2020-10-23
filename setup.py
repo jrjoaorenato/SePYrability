@@ -18,7 +18,7 @@ setup(
     author = 'João Renato Ribeiro manesco',
     author_email = 'joaorenatorm@gmail.com',     
     url = 'https://github.com/jrjoaorenato/SePYrability',   
-    download_url = 'https://github.com/user/reponame/archive/v_01.tar.gz', 
+    download_url = 'https://github.com/jrjoaorenato/SePYrability/archive/v0.0.1.tar.gz', 
     keywords = ['Separability', 'Metric'], 
     install_requires=[
             'numpy',
