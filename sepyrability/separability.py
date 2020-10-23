@@ -12,11 +12,11 @@ def separability(data, labels, distfun = dis.euclidian, dx = 0.01, start= 0.01):
     as the multiscale separability of each interval.
 
     Parameters:
-        data (np.array): The data on which separability is to be
+        data (np.array): The data on which separability is going to be
         calculated
         labels (np.array): label information for each piece of data
         dx (float): step of each interval
-        dist (function): distance function on which separability is 
+        distfun (function): distance function on which separability is 
         going to be evaluated
     '''
     dx = np.arange(start, 1.0, dx)
@@ -37,10 +37,13 @@ def separability(data, labels, distfun = dis.euclidian, dx = 0.01, start= 0.01):
         #is then calculated using the parameter distfun
         dist = distfun(ref, data)
 
-        #aux then stores the proportion of the data within that respective distance
+        #aux then stores the proportion of the data within that respective distance that
+        #is not part of the same class
         aux = np.array([[]])
         for j in dx:
-            nrc = (np.where(dist <= j)[0]).shape[0]
+            auxdat = np.nonzero(dist <= j) #data entities within the radius
+            #number of data entities within the radius that aren't from the same class 
+            nrc = np.where(labels[auxdat] != unique[i])[0].shape[0]
             #separability is then calculated
             sd = 1 - (nrc/data.shape[0])
             aux = np.append(aux, sd)

@@ -7,7 +7,12 @@ def euclidian(ref, X):
     dist = dist/np.max(dist)
     return dist
 
+#todo: find better cosine distance metric
 def cosine(ref, X):
-    dist = np.inner(ref, X)/(np.linalg.norm(ref) * np.linalg.norm(X))
-    return dist
+    #returns cosine distance between the reference point and X
+    aux = []
+    for x in X:
+        dist = 1 - np.inner(ref, x)/(np.linalg.norm(ref) * np.linalg.norm(x))
+        aux.append(dist)
+    return aux
 
