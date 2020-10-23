@@ -28,7 +28,7 @@ The separability of a descriptor indicates it's discriminatory capabilities amon
 
 ### Method 1 - PIP
 Just run:
-```pip install sepyrability``` 
+```pip install SePYrability``` 
 
 ### Method 2 - Manual Installation
 
