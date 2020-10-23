@@ -115,5 +115,5 @@ import numpy as np
 D = loadmat(<some .mat dataset location>)
 X = D['X']
 Y = D['Y']
-ms, auc = sep.calculate_separability(Xt, Yt)
+ms, auc = sep.calculate_separability(X, Y)
 ```
